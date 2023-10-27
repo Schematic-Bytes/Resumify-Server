@@ -1,0 +1,10 @@
+fastapi[all]
+redis
+uvicorn
+httpx
+python-multipart
+pdftotext
+openai
+tiktoken
+celery[redis]
+python-dotenv

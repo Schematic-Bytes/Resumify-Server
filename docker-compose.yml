@@ -1,0 +1,53 @@
+version: "3"
+
+services:
+    app:
+        image: python:3.11-buster
+        container_name: parser-app
+        hostname: web
+        working_dir: "/application/"
+        entrypoint: "bash entrypoint.sh"
+        environment:
+          - PYTHONUNBUFFERED=1
+        volumes:
+          - app-python3.11-site-packages:/usr/local/lib/python3.11/site-packages
+          - app-python3.11-usr-local-bin:/usr/local/bin
+          - shared-tmp-directory:/tmp/
+          - .:/application
+        depends_on:
+          - redis
+        ports:
+          - "5000:5000"
+        stdin_open: true
+        tty: true
+
+    redis:
+        image: redis:7.2.0
+        container_name: redis-db
+        ports:
+          - "6379:6379"
+
+    celery:
+        image: python:3.11-buster
+        container_name: celery
+        hostname: worker
+        working_dir: "/application"
+        entrypoint: "bash entrypoint.sh"
+        environment:
+          - PYTHONUNBUFFERED=1
+          - C_FORCE_ROOT=TRUE
+        volumes:
+          - app-python3.11-site-packages:/usr/local/lib/python3.11/site-packages
+          - app-python3.11-usr-local-bin:/usr/local/bin
+          - shared-tmp-directory:/tmp/
+          - .:/application
+        depends_on:
+          - redis
+        stdin_open: true
+        tty: true
+
+
+volumes:
+    shared-tmp-directory:
+    app-python3.11-site-packages:
+    app-python3.11-usr-local-bin:
